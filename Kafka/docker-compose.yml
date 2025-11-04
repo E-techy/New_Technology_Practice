@@ -32,6 +32,12 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
 
+      # Kafka number of partition by default 
+      KAFKA_NUM_PARTITIONS: 3
+
+      # Kafka default replication factor
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 2
+
     volumes:
       - kafka1_data:/var/lib/kafka/data # Unique volume for Broker 1 data
 
@@ -62,6 +68,11 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      # Kafka number of partition by default 
+      KAFKA_NUM_PARTITIONS: 3
+
+      # Kafka default replication factor
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 2
       
     volumes:
       - kafka2_data:/var/lib/kafka/data # Unique volume for Broker 2 data
