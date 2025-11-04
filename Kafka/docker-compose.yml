@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # --- BROKER 1 ---
+  kafka1:
+    image: confluentinc/cp-kafka:latest # A popular, reliable Kafka image
+    hostname: kafka1
+    container_name: kafka1
+    ports:
+      - "9092:9092" # External Listener Port (for client access)
+    environment:
+      # General Cluster Configuration
+      KAFKA_CLUSTER_ID: 'MkRNZGE5N2YtMjRlNS00ZjkyLTgwOTQtMGIwZGM5Nzk5OTg5' # Unique ID for the cluster (must be the same for all brokers)
+      KAFKA_BROKER_ID: 1 # Unique ID for this broker
+      
+      # KRaft Configuration (Both broker and controller roles)
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093' # Defines the controller nodes
+      
+      # Listener Setup
+      # PLAINTEXT: External/Client access (exposed via port 9092)
+      # CONTROLLER: Internal controller communication
+      # INTER_BROKER: Internal broker-to-broker communication (uses internal Docker network)
+      KAFKA_LISTENERS: 'PLAINTEXT://:9092,CONTROLLER://:9093,INTER_BROKER://kafka1:29092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9092,INTER_BROKER://kafka1:29092' # How clients/other brokers connect
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,INTER_BROKER:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTER_BROKER'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+
+      # Learning Configuration
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2 # Ensures internal topics are replicated across both brokers
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+
+    volumes:
+      - kafka1_data:/var/lib/kafka/data # Unique volume for Broker 1 data
+
+  # --- BROKER 2 ---
+  kafka2:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka2
+    container_name: kafka2
+    ports:
+      - "9093:9092" # Map the container's 9092 port to the host's 9093 port
+    environment:
+      # General Cluster Configuration
+      KAFKA_CLUSTER_ID: 'MkRNZGE5N2YtMjRlNS00ZjkyLTgwOTQtMGIwZGM5Nzk5OTg5' # Must match Broker 1
+      KAFKA_BROKER_ID: 2 # Unique ID for this broker
+      
+      # KRaft Configuration
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093' # Must match Broker 1
+      
+      # Listener Setup
+      KAFKA_LISTENERS: 'PLAINTEXT://:9092,CONTROLLER://:9093,INTER_BROKER://kafka2:29092'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://localhost:9093,INTER_BROKER://kafka2:29092' # Note the use of localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,INTER_BROKER:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTER_BROKER'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      
+      # Learning Configuration (Must match Broker 1)
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 2
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+      
+    volumes:
+      - kafka2_data:/var/lib/kafka/data # Unique volume for Broker 2 data
+
+volumes:
+  kafka1_data:
+  kafka2_data:
