@@ -43,4 +43,11 @@ const addData = async (key, value) => {
 }
 
 
-addData("rman1234", JSON.stringify({ event: 'OrderCreated', timestamp: new Date().toISOString() }));
+addData("raju", JSON.stringify({ event: 'meow', timestamp: new Date().toISOString() }));
+
+// // Sending fake streams of data 
+// for (let i = 5; i < 10; i + 2) {
+//     addData(`raju id now ${i}`, JSON.stringify({ event: `meow ${i}`, timestamp: new Date().toISOString() }));
+
+    
+// }
