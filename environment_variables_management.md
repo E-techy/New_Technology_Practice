@@ -1,4 +1,4 @@
-#to load env from the .env file
+# to load env from the .env file
 set -a; source .env; set +a
 
 # to print env 
