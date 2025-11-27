@@ -1,5 +1,7 @@
 # to start all services inside the root where the docker compose file is present
 docker compose up -d (The -d is for the detached mode)
+docker compose up -d --build (to build the container image first then start it using the new code for the container)
+
 
 # to start the services from another root folder where the compose file is not present 
 docker compose -f filepathtothecompose up -d
