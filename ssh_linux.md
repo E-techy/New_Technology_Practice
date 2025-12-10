@@ -19,6 +19,26 @@ Run the script below on your Linux machine. It handles:
 Save the code below as `setup_ssh.sh`, make it executable, and run it.
 
 ```bash
+# SSH Setup & Connection Guide
+
+This guide provides a "One-Click" setup script to configure a Linux server (like Ubuntu/Multipass) for SSH access and instructions on how to connect from a client device (Mac/Windows).
+
+---
+
+## Part 1: Server Setup (The Device You Want to Control)
+
+Run the script below on your Linux machine. It handles:
+1.  Checking/Installing `openssh-server`.
+2.  Forcing "Password Authentication" to ON (bypassing cloud-init defaults).
+3.  Restarting the SSH service.
+4.  Checking if the current user has a usable password and prompting to create one if needed.
+5.  **Printing the exact connection command** for you to copy.
+
+### The "Auto-Setup" Script
+
+Save the code below as `setup_ssh.sh`, make it executable, and run it.
+
+```bash
 #!/bin/bash
 
 # ==========================================
@@ -109,11 +129,16 @@ fi
 echo ""
 echo "=========================================="
 echo "🎉 SETUP COMPLETE!"
-echo "You can now connect to this machine."
-echo "Your IP Address is:" 
-ip a | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d/ -f1
-echo "=========================================="
+echo "Copy and run one of the commands below on your Client (Mac/Windows):"
+echo ""
 
+# Get all IPv4 addresses (excluding localhost), loop through them, and print the ssh command
+ip -4 addr show | grep inet | grep -v "127.0.0.1" | awk '{print $2}' | cut -d/ -f1 | while read ip; do
+    echo "ssh $USER_NAME@$ip"
+done
+
+echo ""
+echo "=========================================="
 ```
 
 How to Run This Script
@@ -123,9 +148,15 @@ Paste the code above.
 
 Save and exit (Ctrl+O, Enter, Ctrl+X).
 
-Make it executable: chmod +x setup_ssh.sh
+Make it executable: 
+```bash
+chmod +x setup_ssh.sh
+```
 
-Run it: ./setup_ssh.sh
+Run it: 
+```bash 
+./setup_ssh.sh
+```
 
 Part 2: Client Connection (Mac / Windows / Linux)
 Once the script above finishes, go to your other device.
